@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\EducationPath.Accounts.Contracts\EducationPath.Accounts.Contracts.csproj" />
+      <ProjectReference Include="..\..\Shared\EducationPath.Framework\EducationPath.Framework.csproj" />
+      <ProjectReference Include="..\EducationPath.Accounts.Application\EducationPath.Accounts.Application.csproj" />
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,16 @@
+﻿{
+  "Roles": {
+    "Admin": [
+      "admin.permission"
+    ],
+    "Student": [
+      "student.permission"
+    ]
+  },
+  "Permissions": {
+    "Accounts": [
+      "admin.permission",
+      "student.permission"
+    ]
+  }
+}
