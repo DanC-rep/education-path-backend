@@ -1,4 +1,5 @@
-﻿using EducationPath.SharedKernel.ValueObjects.Ids;
+﻿using EducationPath.SharedKernel.ValueObjects;
+using EducationPath.SharedKernel.ValueObjects.Ids;
 using EducationPath.Skills.Domain.Entities;
 using EducationPath.Skills.Domain.ValueObjects;
 using Microsoft.EntityFrameworkCore;

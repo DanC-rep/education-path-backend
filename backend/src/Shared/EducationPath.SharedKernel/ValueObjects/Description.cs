@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using EducationPath.SharedKernel.Errors;
 
-namespace EducationPath.Skills.Domain.ValueObjects;
+namespace EducationPath.SharedKernel.ValueObjects;
 
 public class Description : ValueObject
 {

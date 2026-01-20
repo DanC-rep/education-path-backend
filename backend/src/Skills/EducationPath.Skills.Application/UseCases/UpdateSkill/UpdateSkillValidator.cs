@@ -1,4 +1,5 @@
 ﻿using EducationPath.Core.Validation;
+using EducationPath.SharedKernel.ValueObjects;
 using EducationPath.Skills.Domain.ValueObjects;
 using FluentValidation;
 

@@ -4,6 +4,7 @@ using EducationPath.Core.Database;
 using EducationPath.Core.Enums;
 using EducationPath.Core.Validation;
 using EducationPath.SharedKernel.Errors;
+using EducationPath.SharedKernel.ValueObjects;
 using EducationPath.Skills.Application.Interfaces;
 using EducationPath.Skills.Application.UseCases.CreateSkill;
 using EducationPath.Skills.Domain.ValueObjects;

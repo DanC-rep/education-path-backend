@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using EducationPath.SharedKernel.ValueObjects;
 using EducationPath.SharedKernel.ValueObjects.Ids;
 using EducationPath.Skills.Domain.ValueObjects;
 

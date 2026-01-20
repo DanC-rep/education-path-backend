@@ -1,4 +1,6 @@
 ﻿using EducationPath.Accounts.Infrastructure;
+using EducationPath.AI;
+using EducationPath.AI.Interfaces;
 using EducationPath.Core.Abstractions;
 using EducationPath.Framework.Authorization;
 using EducationPath.Skills.Infrastructure;
@@ -19,7 +21,8 @@ public static class Inject
             .AddAccountsModule(configuration)
             .AddSkillsModule(configuration)
             .AddAuthServices(configuration)
-            .AddApplicationLayers();
+            .AddApplicationLayers()
+            .AddAI();
 
         return services;
     }
@@ -78,6 +81,13 @@ public static class Inject
             .WithScopedLifetime());
         
         services.AddValidatorsFromAssemblies(assemblies);
+        return services;
+    }
+
+    private static IServiceCollection AddAI(this IServiceCollection services)
+    {
+        services.AddScoped<IAiChat, IAiChat>();
+
         return services;
     }
 }
