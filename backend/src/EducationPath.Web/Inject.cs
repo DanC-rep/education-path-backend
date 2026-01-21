@@ -3,6 +3,7 @@ using EducationPath.AI;
 using EducationPath.AI.Interfaces;
 using EducationPath.Core.Abstractions;
 using EducationPath.Framework.Authorization;
+using EducationPath.LearningPaths.Infrastructure;
 using EducationPath.Skills.Infrastructure;
 using FluentValidation;
 using Serilog;
@@ -20,6 +21,7 @@ public static class Inject
             .AddLogging(configuration)
             .AddAccountsModule(configuration)
             .AddSkillsModule(configuration)
+            .AddLearningPathsInfrastructure(configuration)
             .AddAuthServices(configuration)
             .AddApplicationLayers()
             .AddAI();
@@ -60,6 +62,15 @@ public static class Inject
         return services;
     }
 
+    private static IServiceCollection AddLearningPathsModule(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddLearningPathsInfrastructure(configuration);
+
+        return services;
+    }
+
     private static IServiceCollection AddApplicationLayers(this IServiceCollection services)
     {
         var assemblies = new[]
@@ -86,7 +97,7 @@ public static class Inject
 
     private static IServiceCollection AddAI(this IServiceCollection services)
     {
-        services.AddScoped<IAiChat, IAiChat>();
+        services.AddScoped<IAiChat, AiChat>();
 
         return services;
     }

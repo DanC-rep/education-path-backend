@@ -20,6 +20,8 @@
     <ItemGroup>
       <ProjectReference Include="..\Accounts\EducationPath.Accounts.Infrastructure\EducationPath.Accounts.Infrastructure.csproj" />
       <ProjectReference Include="..\Accounts\EducationPath.Accounts.Presentation\EducationPath.Accounts.Presentation.csproj" />
+      <ProjectReference Include="..\LearningPaths\EducationPath.LearningPaths.Infrastructure\EducationPath.LearningPaths.Infrastructure.csproj" />
+      <ProjectReference Include="..\LearningPaths\EducationPath.LearningPaths.Presentation\EducationPath.LearningPaths.Presentation.csproj" />
       <ProjectReference Include="..\Shared\EducationPath.AI\EducationPath.AI.csproj" />
       <ProjectReference Include="..\Shared\EducationPath.Framework\EducationPath.Framework.csproj" />
       <ProjectReference Include="..\Skills\EducationPath.Skills.Infrastructure\EducationPath.Skills.Infrastructure.csproj" />

@@ -3,5 +3,6 @@
 public enum Modules
 {
     Accounts,
-    Skills
+    Skills,
+    LearingPaths
 }

@@ -19,11 +19,11 @@ public class LessonDependencyConfiguration : IEntityTypeConfiguration<LessonDepe
                 value => LessonDependencyId.Create(value));
 
         builder.HasOne(ld => ld.FromLesson)
-            .WithMany()
+            .WithMany(l => l.OutgoingDependencies)
             .HasForeignKey(ld => ld.FromLessonId);
 
         builder.HasOne(ld => ld.ToLesson)
-            .WithMany()
+            .WithMany(l => l.IncomingDependencies)
             .HasForeignKey(ld => ld.ToLessonId);
     }
 }

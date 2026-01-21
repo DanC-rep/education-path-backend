@@ -21,6 +21,12 @@ public class Lesson : Entity<LessonId>
 
     private readonly List<Link>? _links;
 
+    public IReadOnlyList<LessonDependency>? OutgoingDependencies;
+    private readonly List<LessonDependency> _outgoingDependencies;
+
+    public IReadOnlyList<LessonDependency>? IncomingDependencies;
+    private readonly List<LessonDependency> _incomingDependencies;
+
     private Lesson(LessonId id) : base(id) { }
 
     public Lesson(
