@@ -21,11 +21,10 @@ public class AiChat : IAiChat
     }
     
     public async Task<Result<string, Error>> SendPrompt(
+        Chat client,
         string prompt, 
         CancellationToken cancellationToken = default)
     {
-        var client = InitClient();
-
         try
         {
             List<string> response = [];
@@ -43,7 +42,7 @@ public class AiChat : IAiChat
         }
     }
 
-    private Chat InitClient()
+    public Chat InitClient()
     {
         var client = new OllamaApiClient(_connectionString)
         {

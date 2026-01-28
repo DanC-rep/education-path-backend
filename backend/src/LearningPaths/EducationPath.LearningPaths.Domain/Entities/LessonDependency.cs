@@ -17,13 +17,10 @@ public class LessonDependency : Entity<LessonDependencyId>
     {
     }
 
-    public LessonDependency(Lesson fromLesson, Lesson toLesson, RoadmapId roadmapId)
+    public LessonDependency(LessonId fromLesson, LessonId toLesson, RoadmapId roadmapId)
     {
-        FromLesson = fromLesson;
-        ToLesson = toLesson;
-        
-        FromLessonId = fromLesson.Id;
-        ToLessonId = toLesson.Id;
+        FromLessonId = fromLesson;
+        ToLessonId = toLesson;
         
         RoadmapId = roadmapId;
     }

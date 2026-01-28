@@ -1,10 +1,12 @@
 ﻿using EducationPath.Accounts.Infrastructure;
+using EducationPath.Accounts.Presentation;
 using EducationPath.AI;
 using EducationPath.AI.Interfaces;
 using EducationPath.Core.Abstractions;
 using EducationPath.Framework.Authorization;
 using EducationPath.LearningPaths.Infrastructure;
 using EducationPath.Skills.Infrastructure;
+using EducationPath.Skills.Presentation;
 using FluentValidation;
 using Serilog;
 using Serilog.Events;
@@ -48,7 +50,9 @@ public static class Inject
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddAccountsInfrastructure(configuration);
+        services
+            .AddAccountsPresentation()
+            .AddAccountsInfrastructure(configuration);
 
         return services;
     }
@@ -57,7 +61,9 @@ public static class Inject
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddSkillsInfrastructure(configuration);
+        services
+            .AddSkillsPresentation()
+            .AddSkillsInfrastructure(configuration);
 
         return services;
     }
@@ -76,7 +82,8 @@ public static class Inject
         var assemblies = new[]
         {
             typeof(EducationPath.Accounts.Application.Inject).Assembly,
-            typeof(EducationPath.Skills.Application.Inject).Assembly
+            typeof(EducationPath.Skills.Application.Inject).Assembly,
+            typeof(EducationPath.LearningPaths.Application.Inject).Assembly
         };
         
         services.Scan(scan => scan.FromAssemblies(assemblies)

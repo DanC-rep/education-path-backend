@@ -23,7 +23,7 @@ public class Roadmap : Entity<RoadmapId>
 
     private Roadmap(RoadmapId id) : base(id) { }
 
-    private Roadmap(
+    public Roadmap(
         RoadmapId id,
         RoadmapTitle title,
         Description description,

@@ -7,7 +7,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Accounts\EducationPath.Accounts.Contracts\EducationPath.Accounts.Contracts.csproj" />
+      <ProjectReference Include="..\..\Shared\EducationPath.AI\EducationPath.AI.csproj" />
       <ProjectReference Include="..\..\Shared\EducationPath.Core\EducationPath.Core.csproj" />
+      <ProjectReference Include="..\..\Skills\EducationPath.Skills.Contracts\EducationPath.Skills.Contracts.csproj" />
       <ProjectReference Include="..\EducationPath.LearningPaths.Contracts\EducationPath.LearningPaths.Contracts.csproj" />
       <ProjectReference Include="..\EducationPath.LearningPaths.Domain\EducationPath.LearningPaths.Domain.csproj" />
     </ItemGroup>
