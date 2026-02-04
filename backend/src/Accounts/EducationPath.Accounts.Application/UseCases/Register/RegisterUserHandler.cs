@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using EducationPath.Accounts.Application.Interfaces;
+using EducationPath.Accounts.Contracts.Responses;
 using EducationPath.Accounts.Domain;
 using EducationPath.Accounts.Domain.Roles;
 using EducationPath.Accounts.Domain.Users;
@@ -17,12 +18,13 @@ using Microsoft.Extensions.Logging;
 
 namespace EducationPath.Accounts.Application.UseCases.Register;
 
-public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
+public class RegisterUserHandler : ICommandHandler<LoginResponse, RegisterUserCommand>
 {
     private readonly UserManager<User> _userManager;
     private readonly RoleManager<Role> _roleManager;
     private readonly IAccountsManager _accountsManager;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly ITokenProvider _tokenProvider;
     private readonly ILogger<RegisterUserHandler> _logger;
     private readonly IValidator<RegisterUserCommand> _validator;
 
@@ -30,6 +32,7 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         UserManager<User> userManager,
         RoleManager<Role> roleManager,
         IAccountsManager accountsManager,
+        ITokenProvider tokenProvider,
         [FromKeyedServices(Modules.Accounts)] IUnitOfWork unitOfWork,
         ILogger<RegisterUserHandler> logger,
         IValidator<RegisterUserCommand> validator)
@@ -37,12 +40,13 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
         _userManager = userManager;
         _roleManager = roleManager;
         _accountsManager = accountsManager;
+        _tokenProvider = tokenProvider;
         _unitOfWork = unitOfWork;
         _logger = logger;
         _validator = validator;
     }
     
-    public async Task<UnitResult<ErrorList>> Handle(
+    public async Task<Result<LoginResponse, ErrorList>> Handle(
         RegisterUserCommand command, 
         CancellationToken cancellationToken = default)
     {
@@ -86,11 +90,24 @@ public class RegisterUserHandler : ICommandHandler<RegisterUserCommand>
 
             await _unitOfWork.SaveChanges(cancellationToken);
 
+            var accessToken = await _tokenProvider.GenerateAccessToken(userResult.Value, cancellationToken);
+            
+            var refreshToken = await _tokenProvider.GenerateRefreshToken(
+                userResult.Value, 
+                accessToken.Jti, 
+                cancellationToken);
+
             await transaction.CommitAsync(cancellationToken);
 
             _logger.LogInformation("user was created with username {userName}", command.UserName);
 
-            return Result.Success<ErrorList>();
+            var userResponse = new UserResponse(
+                userResult.Value.Id,
+                userResult.Value.UserName!,
+                userResult.Value.Email!,
+                userResult.Value.Roles.Select(r => r.Name!.ToLower()));
+
+            return new LoginResponse(accessToken.AccessToken, refreshToken, userResponse);
         }
         catch (Exception ex)
         {

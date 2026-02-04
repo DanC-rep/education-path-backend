@@ -17,7 +17,8 @@ namespace EducationPath.Accounts.Presentation;
 public class AccountsController : ApplicationController
 {
     [HttpPost("registration")]
-    public async Task<EndpointResult> Register(
+    [ProducesResponseType<Envelope<LoginResponse>>(200)]
+    public async Task<EndpointResult<LoginResponse>> Register(
         [FromBody] RegisterUserRequest request,
         [FromServices] RegisterUserHandler handler,
         CancellationToken cancellationToken = default)

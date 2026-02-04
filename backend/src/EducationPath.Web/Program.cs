@@ -27,6 +27,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "AuthService"));
 }
 
+app.UseCors(config =>
+{
+    config.WithOrigins("http://localhost:5173")
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+});
+
 app.UseAuthentication();
 app.UseScopedDataMiddleware();
 app.UseAuthorization();
