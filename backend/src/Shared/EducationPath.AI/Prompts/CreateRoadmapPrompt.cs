@@ -25,7 +25,7 @@ public static class CreateRoadmapPrompt
 
         sb.AppendLine("Title: [roadmap title];")
           .AppendLine("Description: [roadmap description];")
-          .AppendLine("Count: [lessons count];");
+          .AppendLine("Count: [lessons count (max 5)];");
 
         return sb.ToString();
     }

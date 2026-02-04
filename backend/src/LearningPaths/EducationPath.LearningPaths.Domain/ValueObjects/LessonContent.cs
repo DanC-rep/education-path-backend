@@ -5,7 +5,7 @@ namespace EducationPath.LearningPaths.Domain.ValueObjects;
 
 public class LessonContent : ValueObject
 {
-    public const int MAX_LESSON_CONTENT_LENGTH = 1000;
+    public const int MAX_LESSON_CONTENT_LENGTH = 2000;
     
     public string Value { get; private set; }
     

@@ -17,7 +17,11 @@ public class LessonDependency : Entity<LessonDependencyId>
     {
     }
 
-    public LessonDependency(LessonId fromLesson, LessonId toLesson, RoadmapId roadmapId)
+    public LessonDependency(
+        LessonDependencyId id,
+        LessonId fromLesson, 
+        LessonId toLesson, 
+        RoadmapId roadmapId) : base(id)
     {
         FromLessonId = fromLesson;
         ToLessonId = toLesson;

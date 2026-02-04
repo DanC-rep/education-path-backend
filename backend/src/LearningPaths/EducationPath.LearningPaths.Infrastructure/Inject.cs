@@ -2,7 +2,9 @@
 using EducationPath.Core.Enums;
 using EducationPath.LearningPaths.Application.Interfaces;
 using EducationPath.LearningPaths.Infrastructure.DbContexts;
+using EducationPath.LearningPaths.Infrastructure.Repositories;
 using EducationPath.SharedKernel;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,7 +16,9 @@ public static class Inject
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddDatabase(configuration);
+        services
+            .AddRepositories()
+            .AddDatabase(configuration);
 
         return services;
     }
@@ -30,6 +34,15 @@ public static class Inject
             new LearningPathsReadDbContext(configuration.GetConnectionString(Constants.DATABASE)!));
 
         services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Modules.LearingPaths);
+
+        return services;
+    }
+
+    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped<IRoadmapsRepository, RoadmapsRepository>();
+        services.AddScoped<ILessonsRepository, LessonsRepository>();
+        services.AddScoped<ILessonsDependenciesRepository, LessonsDependenciesRepository>();
 
         return services;
     }

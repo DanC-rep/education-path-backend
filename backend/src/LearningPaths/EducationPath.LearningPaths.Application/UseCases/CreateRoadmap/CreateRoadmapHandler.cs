@@ -23,6 +23,8 @@ namespace EducationPath.LearningPaths.Application.UseCases.CreateRoadmap;
 public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
 {
     private readonly IRoadmapsRepository _roadmapsRepository;
+    private readonly ILessonsRepository _lessonsRepository;
+    private readonly ILessonsDependenciesRepository _lessonsDependenciesRepository;
     private readonly IAiChat _aiChat;
     private readonly IAccountsContract _accountsContract;
     private readonly ISkillsContract _skillsContract;
@@ -31,6 +33,8 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
 
     public CreateRoadmapHandler(
         IRoadmapsRepository roadmapsRepository,
+        ILessonsRepository lessonsRepository,
+        ILessonsDependenciesRepository lessonsDependenciesRepository,
         IAiChat aiChat,
         IAccountsContract accountsContract,
         ISkillsContract skillsContract,
@@ -40,6 +44,8 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
         _logger = logger;
         _unitOfWork = unitOfWork;
         _roadmapsRepository = roadmapsRepository;
+        _lessonsRepository = lessonsRepository;
+        _lessonsDependenciesRepository = lessonsDependenciesRepository;
         _aiChat = aiChat;
         _accountsContract = accountsContract;
         _skillsContract = skillsContract;
@@ -61,7 +67,6 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
         
         var transaction = await _unitOfWork.BeginTransaction(cancellationToken);
 
-        // Над возвращаемым результатом надо покумекать - мне нужны RoadmapId и LessonsCounts
         var roadmapResult = await CreateRoadmap(
             client,
             skillsResult.Value,
@@ -75,8 +80,8 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
         
         var lessonsResult = await CreateLessons(
             client,
-            0, // fix
-            roadmapResult.Value,
+            roadmapResult.Value.Item2,
+            roadmapResult.Value.Item1,
             cancellationToken);
 
         if (lessonsResult.IsFailure)
@@ -86,10 +91,10 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
         
         await transaction.CommitAsync(cancellationToken);
 
-        return roadmapResult.Value.Value;
+        return roadmapResult.Value.Item1.Value;
     }
 
-    private async Task<Result<RoadmapId, Error>> CreateRoadmap(
+    private async Task<Result<(RoadmapId, int), Error>> CreateRoadmap(
         Chat client,
         IEnumerable<string> skills,
         string additionalData,
@@ -109,7 +114,7 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
         if (aiResponse.IsFailure)
             return aiResponse.Error;
 
-        var roadmapAiResponse = AiResponsesConverter.ConvertRoadmapResponse(aiResponse.Value);
+        var roadmapAiResponse = RoadmapResponseConverter.ConvertRoadmapResponse(aiResponse.Value);
         
         if (roadmapAiResponse.IsFailure)
             return roadmapAiResponse.Error;
@@ -130,7 +135,7 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
         
         await _roadmapsRepository.Add(roadmap, cancellationToken);
 
-        return roadmapId;
+        return (roadmapId, roadmapAiResponse.Value.LessonsCount);
     }
 
     private async Task<UnitResult<Error>> CreateLessons(
@@ -139,68 +144,78 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
         RoadmapId roadmapId,
         CancellationToken cancellationToken)
     {
-        var lessonsDependencies = new List<LessonDependency>();
-        
+        var lessonIdsByNumber = new Dictionary<int, LessonId>();
+        var rawDeps = new List<(int From, int To)>();
+
         for (var i = 0; i < lessonsCount; i++)
         {
-            var lessonPrompt = CreateLessonPrompt.GetPrompt(i + 1);
-            
-            var aiResponse = await _aiChat.SendPrompt(client, lessonPrompt, cancellationToken);
+            var lessonNumber = i + 1;
 
-            if (aiResponse.IsFailure)
+            var lessonPrompt = CreateLessonPrompt.GetPrompt(lessonNumber);
+            var aiResponse = await _aiChat.SendPrompt(client, lessonPrompt, cancellationToken);
+            
+            if (aiResponse.IsFailure) 
                 return aiResponse.Error;
+
+            var lessonAiResponse = LessonResponseConverter.ConvertLessonResponse(aiResponse.Value);
             
-            var lessonAiResponse = AiResponsesConverter.ConvertLessonResponse(aiResponse.Value);
-            
-            if (lessonAiResponse.IsFailure)
+            if (lessonAiResponse.IsFailure) 
                 return lessonAiResponse.Error;
 
             var lessonTitle = LessonTitle.Create(lessonAiResponse.Value.LessonTitle);
             
-            if (lessonTitle.IsFailure)
+            if (lessonTitle.IsFailure) 
                 return lessonTitle.Error;
-            
+
             var lessonContent = LessonContent.Create(lessonAiResponse.Value.LessonContent);
             
-            if (lessonContent.IsFailure)
+            if (lessonContent.IsFailure) 
                 return lessonContent.Error;
 
             var links = new List<Link>();
-
             foreach (var link in lessonAiResponse.Value.Links)
             {
                 var linkResult = Link.Create(link);
                 
-                if (linkResult.IsFailure)
+                if (linkResult.IsFailure) 
                     return linkResult.Error;
                 
                 links.Add(linkResult.Value);
             }
 
+            var lessonType = (LessonType)lessonAiResponse.Value.LessonType;
+
             var lessonId = LessonId.NewId();
+            lessonIdsByNumber[lessonNumber] = lessonId;
 
-            var lesson = new Lesson(
-                lessonId,
-                lessonTitle.Value,
-                lessonContent.Value,
-                roadmapId,
-                links);
+            var lesson = new Lesson(lessonId, lessonTitle.Value, lessonContent.Value, roadmapId, lessonType, links);
+            await _lessonsRepository.Add(lesson, cancellationToken);
             
-            // lessonsRepository.Add(lesson);
-
-            // lessonsDependencies.AddRange(lessonAiResponse.Value.NextLessons.Select(d => 
-            //    new LessonDependency(lessonId, LessonId.Create())));
-            
-            // lessonsDependencies.AddRange(lessonAiResponse.Value.PrevLessons.Select(d => 
-            //    new LessonDependency(LessonId.Create(), lessonId)));
-            
-            // можно объявить коллекцию уроков в начале метода и после создания добавлять их
-            // потом для связей их просто будем вытягивать по номеру и забирать Id
-            // также проверить чтобы не создавались одинаковые записи LessonsDependencies
+            rawDeps.AddRange(lessonAiResponse.Value.NextLessons.Select(n => (From: lessonNumber, To: n)));
+            rawDeps.AddRange(lessonAiResponse.Value.PrevLessons.Select(n => (From: n, To: lessonNumber)));
         }
         
-        // lessonsDependenciesRepository.Add(lessonsDependencies);
+        var lessonDependencies = new List<LessonDependency>();
+
+        foreach (var (fromNum, toNum) in rawDeps.Distinct())
+        {
+            if (!lessonIdsByNumber.TryGetValue(fromNum, out var fromId))
+                return GeneralErrors.NotFound(null ,$"Unknown lesson number in dependency: {fromNum}");
+
+            if (!lessonIdsByNumber.TryGetValue(toNum, out var toId))
+                return GeneralErrors.NotFound(null ,$"Unknown lesson number in dependency: {toNum}");
+
+            if (fromId == toId) 
+                continue;
+            
+            var dependencyId = LessonDependencyId.NewId();
+            
+            lessonDependencies.Add(new LessonDependency(dependencyId, fromId, toId, roadmapId));
+        }
+
+        await _lessonsDependenciesRepository.AddRange(lessonDependencies, cancellationToken);
 
         return UnitResult.Success<Error>();
     }
+
 }

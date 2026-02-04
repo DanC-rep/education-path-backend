@@ -22,10 +22,10 @@ public class Lesson : Entity<LessonId>
     private readonly List<Link>? _links;
 
     public IReadOnlyList<LessonDependency>? OutgoingDependencies;
-    private readonly List<LessonDependency> _outgoingDependencies;
+    private readonly List<LessonDependency> _outgoingDependencies = [];
 
     public IReadOnlyList<LessonDependency>? IncomingDependencies;
-    private readonly List<LessonDependency> _incomingDependencies;
+    private readonly List<LessonDependency> _incomingDependencies = [];
 
     private Lesson(LessonId id) : base(id) { }
 
@@ -34,11 +34,13 @@ public class Lesson : Entity<LessonId>
         LessonTitle title,
         LessonContent content,
         RoadmapId roadmapId,
+        LessonType type,
         IEnumerable<Link>? additionalLinks = null) : base(id)
     {
         Title = title;
         Content = content;
         RoadmapId = roadmapId;
+        Type = type;
         _links = additionalLinks?.ToList();
     }
 }
