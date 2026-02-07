@@ -1,7 +1,9 @@
 ﻿using EducationPath.Framework;
 using EducationPath.Framework.EndpointResults;
+using EducationPath.LearningPaths.Application.Queries.GetRoadmapsByUser;
 using EducationPath.LearningPaths.Application.UseCases.CreateRoadmap;
 using EducationPath.LearningPaths.Contracts.Requests;
+using EducationPath.LearningPaths.Contracts.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EducationPath.LearningPaths.Presentation;
@@ -17,6 +19,17 @@ public class LearningPathsController : ApplicationController
         var command = CreateRoadmapCommand.Create(request);
         
         return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpGet("user-roadmaps/{userId:guid}")]
+    public async Task<EndpointResult<UserRoadmapsResponse>> GetUserRoadmaps(
+    [FromRoute] Guid userId,
+    [FromServices] GetRoadmapsByUserHandler handler,
+    CancellationToken cancellationToken = default)
+    {
+        var query = new GetUserRoadmapsQuery(userId);
+
+        return await handler.Handle(query, cancellationToken);
     }
 
     // [HttpGet]
