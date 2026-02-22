@@ -131,7 +131,11 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
 
         var roadmapId = RoadmapId.NewId();
 
-        var roadmap = new Roadmap(roadmapId, roadmapTitle.Value, roadmapDescription.Value, userId);
+        var roadmap = new Roadmap(
+            roadmapId, roadmapTitle.Value,
+            roadmapDescription.Value,
+            (RoadmapLevel)roadmapLevel,
+            userId);
         
         await _roadmapsRepository.Add(roadmap, cancellationToken);
 
@@ -200,10 +204,10 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
         foreach (var (fromNum, toNum) in rawDeps.Distinct())
         {
             if (!lessonIdsByNumber.TryGetValue(fromNum, out var fromId))
-                return GeneralErrors.NotFound(null ,$"Unknown lesson number in dependency: {fromNum}");
+                continue;
 
             if (!lessonIdsByNumber.TryGetValue(toNum, out var toId))
-                return GeneralErrors.NotFound(null ,$"Unknown lesson number in dependency: {toNum}");
+                continue;
 
             if (fromId == toId) 
                 continue;

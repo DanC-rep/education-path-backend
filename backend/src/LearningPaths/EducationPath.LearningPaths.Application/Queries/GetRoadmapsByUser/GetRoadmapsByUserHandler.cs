@@ -1,8 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using EducationPath.Accounts.Contracts;
 using EducationPath.Core.Abstractions;
+using EducationPath.LearningPaths.Application.Converters;
 using EducationPath.LearningPaths.Application.Interfaces;
 using EducationPath.LearningPaths.Contracts.Responses;
+using EducationPath.LearningPaths.Domain.Enums;
 using EducationPath.SharedKernel.Errors;
 
 namespace EducationPath.LearningPaths.Application.Queries.GetRoadmapsByUser;
@@ -35,7 +37,7 @@ public class GetRoadmapsByUserHandler : IQueryHandlerWithResult<UserRoadmapsResp
             r.Id,
             r.Title,
             r.Description,
-            "Basic")); // Добавить поле в БД
+            RoadmapLevelConverter.Convert((RoadmapLevel)r.Level)));
 
         return new UserRoadmapsResponse(generalInfos);
     }

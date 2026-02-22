@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using EducationPath.LearningPaths.Domain.Enums;
 using EducationPath.LearningPaths.Domain.ValueObjects;
 using EducationPath.SharedKernel.ValueObjects;
 using EducationPath.SharedKernel.ValueObjects.Ids;
@@ -11,6 +12,8 @@ public class Roadmap : Entity<RoadmapId>
     
     public Description Description { get; private set; }
     
+    public RoadmapLevel Level { get; private set; }
+    
     public Guid UserId { get; private set; }
     
     public IReadOnlyList<Lesson> Lessons => _lessons;
@@ -19,7 +22,7 @@ public class Roadmap : Entity<RoadmapId>
 
     public IReadOnlyList<LessonDependency> LessonsDependencies => _lessonsDependencies;
 
-    public readonly List<LessonDependency> _lessonsDependencies = [];
+    private readonly List<LessonDependency> _lessonsDependencies = [];
 
     private Roadmap(RoadmapId id) : base(id) { }
 
@@ -27,10 +30,12 @@ public class Roadmap : Entity<RoadmapId>
         RoadmapId id,
         RoadmapTitle title,
         Description description,
+        RoadmapLevel level,
         Guid userId) : base(id)
     {
         Title = title;
         Description = description;
+        Level = level;
         UserId = userId;
     }
 }

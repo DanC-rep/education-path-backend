@@ -1,9 +1,12 @@
 ﻿using EducationPath.Framework;
 using EducationPath.Framework.EndpointResults;
+using EducationPath.LearningPaths.Application.Queries.GetLesson;
+using EducationPath.LearningPaths.Application.Queries.GetRoadmap;
 using EducationPath.LearningPaths.Application.Queries.GetRoadmapsByUser;
 using EducationPath.LearningPaths.Application.UseCases.CreateRoadmap;
 using EducationPath.LearningPaths.Contracts.Requests;
 using EducationPath.LearningPaths.Contracts.Responses;
+using EducationPath.SharedKernel;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EducationPath.LearningPaths.Presentation;
@@ -21,7 +24,8 @@ public class LearningPathsController : ApplicationController
         return await handler.Handle(command, cancellationToken);
     }
 
-    [HttpGet("user-roadmaps/{userId:guid}")]
+    [HttpGet("roadmaps/user/{userId:guid}")]
+    [ProducesResponseType<Envelope<UserRoadmapsResponse>>(200)]
     public async Task<EndpointResult<UserRoadmapsResponse>> GetUserRoadmaps(
     [FromRoute] Guid userId,
     [FromServices] GetRoadmapsByUserHandler handler,
@@ -32,15 +36,27 @@ public class LearningPathsController : ApplicationController
         return await handler.Handle(query, cancellationToken);
     }
 
-    // [HttpGet]
-    // public async Task<EndpointResult> GetRoadmap()
-    // {
-    //     // Метод для отображения общей информации по дорожной карте
-    // }
-    //
-    // [HttpGet]
-    // public async Task<EndpointResult> GetLesson()
-    // {
-    //     // Метод для получения информации по конкретному уроку для его прохождения
-    // }
+    [HttpGet("roadmaps/lesson/{id:guid}")]
+    [ProducesResponseType<Envelope<LessonResponse>>(200)]
+    public async Task<EndpointResult<LessonResponse>> GetLesson(
+        [FromRoute] Guid id,
+        [FromServices] GetLessonHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetLessonQuery(id);
+        
+        return await handler.Handle(query, cancellationToken);
+    }
+
+    [HttpGet("roadmaps/{id:guid}")]
+    [ProducesResponseType<Envelope<RoadmapResponse>>(200)]
+    public async Task<EndpointResult<RoadmapResponse>> GetRoadmap(
+        [FromRoute] Guid id,
+        [FromServices] GetRoadmapHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new GetRoadmapQuery(id);
+        
+        return await handler.Handle(query, cancellationToken);
+    }
 }

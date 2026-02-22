@@ -8,6 +8,8 @@ public class RoadmapDto
     
     public string Description { get; init; } = null!;
     
+    public int Level { get; init; }
+    
     public Guid UserId { get; init; }
     
     public IEnumerable<LessonDto> Lessons { get; init; } = null!;

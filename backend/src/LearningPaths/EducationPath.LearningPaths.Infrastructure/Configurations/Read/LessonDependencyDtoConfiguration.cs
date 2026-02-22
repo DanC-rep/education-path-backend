@@ -8,16 +8,16 @@ public class LessonDependencyDtoConfiguration : IEntityTypeConfiguration<LessonD
 {
     public void Configure(EntityTypeBuilder<LessonDependencyDto> builder)
     {
-        builder.ToTable("lessons_dependencies");
+        builder.ToTable("lesson_dependencies");
 
         builder.HasKey(ld => ld.Id);
         
         builder.HasOne(ld => ld.Fromlesson)
-            .WithMany()
+            .WithMany(l => l.OutgoingDependencies)
             .HasForeignKey(ld => ld.FromLessonId);
 
         builder.HasOne(ld => ld.ToLesson)
-            .WithMany()
+            .WithMany(l => l.IncomingDependencies)
             .HasForeignKey(ld => ld.ToLessonId);
     }
 }

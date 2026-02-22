@@ -8,17 +8,26 @@ public static class CreateLessonPrompt
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine($"Let's generate lesson number {lessonNumber}. Use the following format for your answer. " +
-                      $"Please use the strict \"key: value\" format when answering. Don`t push resources to the content part." +
-                      $"In the content, describe a brief theory on the topic, perhaps including examples. " +
-                      $"And in the resources, provide links for further study of the topic.");
+        sb.AppendLine($"Давай сгенерируем урок под номером {lessonNumber}. Используй следующий формат для твоего ответа. " +
+                      $"Пожалуйста следуй строго \"key: value\" формату в ответе. Не добавляй ссылки на ресурсы в части контента." +
+                      $"В контенте опиши небольшую теорию, можешь добавить несколько примеров. " +
+                      $"А в ресурсах укажи ссылки на источники, где стоит продолжать дальнейшее обучение." +
+                      $"Также необходимо, чтобы ты добавил по крайней мере один урок типа Optional или Recommended. Но большинство" +
+                      $"уроков должно быть типа Required. Учти что у карты обучения должен быть последний урок, у которого нет следующих.");
 
-        sb.AppendLine("Title: [lesson title]")
-          .AppendLine("Content: [lesson content in .md format (max length: 1500 symbols)]")
-          .AppendLine("Resources: [additional links to resources through ;]")
-          .AppendLine("Lesson Type: [Required | Optional | Recommended]")
-          .AppendLine("Next lessons: [next lessons numbers through ;]")
-          .AppendLine("Prev lessons: [previous lessons numbers through ;]");
+        sb.AppendLine("Title: [название урока]")
+          .AppendLine("Content: [Содержимое урока в формате markdown (максимальная длина: 2000 symbols)]")
+          .AppendLine("Resources: [список ссылок, разделяемых символом ;]")
+          .AppendLine("Lesson Type: [Required = 0 | Optional = 1 | Recommended = 2]")
+          .AppendLine("Next lessons: [список следующих уроков, разделяемых символом ;]")
+          .AppendLine("Prev lessons: [список предыдущих уроков, разделяемых символом ;]");
+
+        sb.AppendLine("Пример ответа по части ресурсов, предыдущих и следующих уроков. В списках next и prev lessons указываются" +
+                      "номера уроков, которые должны следовать сразу за / после текущего. Следуй строго заданному формату ответа " +
+                      "и не добавляй лишних символов между ключом с значением:")
+            .AppendLine("Lesson Type: 1")
+            .AppendLine("Resources: https://learn.microsoft.com/en-us/ef/core/;https://learn.microsoft.com/en-us/ef/core/")
+            .AppendLine("Next lessons: [2, 4]");
 
         return sb.ToString();
     }    

@@ -14,7 +14,11 @@ public record LessonDto
     
     public bool IsCompleted { get; init; }
     
-    public IEnumerable<LinkDto>? Links { get; init; }
+    public int Type { get; init; }
     
-    public int LessonType { get; init; }
+    public IEnumerable<LinkDto>? Links { get; init; }
+
+    public ICollection<LessonDependencyDto> OutgoingDependencies { get; init; } = [];
+
+    public ICollection<LessonDependencyDto> IncomingDependencies { get; init; } = [];
 }
