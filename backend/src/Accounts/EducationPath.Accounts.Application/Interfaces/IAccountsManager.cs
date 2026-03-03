@@ -1,4 +1,6 @@
-﻿using EducationPath.Accounts.Domain.Users;
+﻿using CSharpFunctionalExtensions;
+using EducationPath.Accounts.Domain.Users;
+using EducationPath.SharedKernel.Errors;
 
 namespace EducationPath.Accounts.Application.Interfaces;
 
@@ -11,4 +13,6 @@ public interface IAccountsManager
     Task AddAdminAccount(
         AdminAccount adminAccount, 
         CancellationToken cancellationToken = default);
+    
+    Task<Result<User, Error>> GetById(Guid id, CancellationToken cancellationToken = default);
 }

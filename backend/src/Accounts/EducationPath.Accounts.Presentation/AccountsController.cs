@@ -3,6 +3,7 @@ using EducationPath.Accounts.Application.Queries.GetUserById;
 using EducationPath.Accounts.Application.UseCases.Login;
 using EducationPath.Accounts.Application.UseCases.RefreshTokens;
 using EducationPath.Accounts.Application.UseCases.Register;
+using EducationPath.Accounts.Application.UseCases.UpdateInfo;
 using EducationPath.Accounts.Contracts.Requests;
 using EducationPath.Accounts.Contracts.Responses;
 using EducationPath.Framework;
@@ -63,10 +64,15 @@ public class AccountsController : ApplicationController
         return await handler.Handle(query);
     }
 
-    [Permission("student.permission")]
-    [HttpGet("authorize-test")]
-    public EndpointResult TestAuthorize()
+    [HttpPut("{userId:guid}")]
+    public async Task<EndpointResult> UpdateUserInfo(
+        [FromRoute] Guid userId,
+        [FromBody] UpdateUserInfoRequest request,
+        [FromServices] UpdateUserInfoHandler handler,
+        CancellationToken cancellationToken = default)
     {
-        return UnitResult.Success<Error>();
+        var command = new UpdateUserInfoCommand(userId, request.FullName);
+        
+        return await handler.Handle(command, cancellationToken);
     }
 }

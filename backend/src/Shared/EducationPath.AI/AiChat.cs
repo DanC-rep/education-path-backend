@@ -46,7 +46,7 @@ public class AiChat : IAiChat
     {
         var client = new OllamaApiClient(_connectionString)
         {
-            SelectedModel = "gemma3"
+            SelectedModel = "llama3.1:latest"
         };
 
         return new Chat(client);

@@ -3,6 +3,7 @@ using EducationPath.Framework.EndpointResults;
 using EducationPath.LearningPaths.Application.Queries.GetLesson;
 using EducationPath.LearningPaths.Application.Queries.GetRoadmap;
 using EducationPath.LearningPaths.Application.Queries.GetRoadmapsByUser;
+using EducationPath.LearningPaths.Application.UseCases.CompleteLesson;
 using EducationPath.LearningPaths.Application.UseCases.CreateRoadmap;
 using EducationPath.LearningPaths.Contracts.Requests;
 using EducationPath.LearningPaths.Contracts.Responses;
@@ -13,7 +14,7 @@ namespace EducationPath.LearningPaths.Presentation;
 
 public class LearningPathsController : ApplicationController
 {
-    [HttpPost]
+    [HttpPost("roadmaps")]
     public async Task<EndpointResult<Guid>> CreateRoadmap(
         [FromBody] CreateRoadmapRequest request,
         [FromServices] CreateRoadmapHandler handler,
@@ -58,5 +59,16 @@ public class LearningPathsController : ApplicationController
         var query = new GetRoadmapQuery(id);
         
         return await handler.Handle(query, cancellationToken);
+    }
+    
+    [HttpPut("roadmaps/lesson/{id:guid}/complete")]
+    public async Task<EndpointResult> CompleteLesson(
+        [FromRoute] Guid id,
+        [FromServices] CompleteLessonHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var command = new CompleteLessonCommand(id);
+        
+        return await handler.Handle(command, cancellationToken);
     }
 }

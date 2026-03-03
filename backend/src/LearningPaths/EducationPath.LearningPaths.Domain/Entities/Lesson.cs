@@ -43,4 +43,9 @@ public class Lesson : Entity<LessonId>
         Type = type;
         _links = additionalLinks?.ToList();
     }
+
+    public void Complete()
+    {
+        IsCompleted = true;
+    }
 }
