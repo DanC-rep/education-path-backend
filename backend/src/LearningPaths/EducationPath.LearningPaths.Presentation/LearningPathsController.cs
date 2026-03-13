@@ -1,5 +1,6 @@
 ﻿using EducationPath.Framework;
 using EducationPath.Framework.EndpointResults;
+using EducationPath.LearningPaths.Application.Queries.AskQuestion;
 using EducationPath.LearningPaths.Application.Queries.GetLesson;
 using EducationPath.LearningPaths.Application.Queries.GetRoadmap;
 using EducationPath.LearningPaths.Application.Queries.GetRoadmapsByUser;
@@ -70,5 +71,17 @@ public class LearningPathsController : ApplicationController
         var command = new CompleteLessonCommand(id);
         
         return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpGet("roadmaps/lesson/{lessonId:guid}/question")]
+    public async Task<EndpointResult<AskQuestionResponse>> AskQuestion(
+        [FromRoute] Guid lessonId,
+        [FromQuery] string question,
+        [FromServices] AskQuestionHandler handler,
+        CancellationToken cancellationToken = default)
+    {
+        var query = new AskQuestionQuery(lessonId, question);
+
+        return await handler.Handle(query, cancellationToken);
     }
 }

@@ -28,7 +28,6 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
     private readonly IAiChat _aiChat;
     private readonly IAccountsContract _accountsContract;
     private readonly ISkillsContract _skillsContract;
-    private readonly ILogger<CreateRoadmapHandler> _logger;
     private readonly IUnitOfWork _unitOfWork;
 
     public CreateRoadmapHandler(
@@ -38,10 +37,8 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
         IAiChat aiChat,
         IAccountsContract accountsContract,
         ISkillsContract skillsContract,
-        ILogger<CreateRoadmapHandler> logger,
         [FromKeyedServices(Modules.LearingPaths)] IUnitOfWork unitOfWork)
     {
-        _logger = logger;
         _unitOfWork = unitOfWork;
         _roadmapsRepository = roadmapsRepository;
         _lessonsRepository = lessonsRepository;
