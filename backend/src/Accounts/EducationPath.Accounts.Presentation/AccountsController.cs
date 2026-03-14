@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using EducationPath.Accounts.Application.Queries.GetUserById;
 using EducationPath.Accounts.Application.UseCases.Login;
+using EducationPath.Accounts.Application.UseCases.Logout;
 using EducationPath.Accounts.Application.UseCases.RefreshTokens;
 using EducationPath.Accounts.Application.UseCases.Register;
 using EducationPath.Accounts.Application.UseCases.UpdateInfo;
@@ -74,5 +75,15 @@ public class AccountsController : ApplicationController
         var command = new UpdateUserInfoCommand(userId, request.FullName);
         
         return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpPost("{userId:guid}/logout")]
+    public async Task<EndpointResult> Logout(
+        [FromRoute] Guid userId,
+        [FromServices] LogoutHandler handler)
+    {
+        var command = new LogoutCommand(userId);
+        
+        return await handler.Handle(command);
     }
 }

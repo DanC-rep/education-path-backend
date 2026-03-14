@@ -4,5 +4,6 @@ public enum Modules
 {
     Accounts,
     Skills,
-    LearingPaths
+    LearningPaths,
+    Tests
 }

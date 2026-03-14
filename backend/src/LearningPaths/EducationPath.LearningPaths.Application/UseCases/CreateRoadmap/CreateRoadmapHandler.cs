@@ -37,7 +37,7 @@ public class CreateRoadmapHandler : ICommandHandler<Guid, CreateRoadmapCommand>
         IAiChat aiChat,
         IAccountsContract accountsContract,
         ISkillsContract skillsContract,
-        [FromKeyedServices(Modules.LearingPaths)] IUnitOfWork unitOfWork)
+        [FromKeyedServices(Modules.LearningPaths)] IUnitOfWork unitOfWork)
     {
         _unitOfWork = unitOfWork;
         _roadmapsRepository = roadmapsRepository;

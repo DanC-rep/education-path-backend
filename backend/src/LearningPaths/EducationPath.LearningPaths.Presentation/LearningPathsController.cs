@@ -74,6 +74,7 @@ public class LearningPathsController : ApplicationController
     }
 
     [HttpGet("roadmaps/lesson/{lessonId:guid}/question")]
+    [ProducesResponseType<Envelope<AskQuestionResponse>>(200)]
     public async Task<EndpointResult<AskQuestionResponse>> AskQuestion(
         [FromRoute] Guid lessonId,
         [FromQuery] string question,

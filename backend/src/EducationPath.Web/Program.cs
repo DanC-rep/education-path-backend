@@ -1,43 +1,40 @@
+using System.Globalization;
 using EducationPath.Accounts.Infrastructure.Seeding;
-using EducationPath.Framework.Middlewares;
 using EducationPath.Framework.OpenApi;
-using EducationPath.Web;
-using EducationPath.Web.Extensions;
+using EducationPath.Web.Configuration;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .CreateBootstrapLogger();
 
-builder.Services.AddControllers();
-builder.Services.AddCustomOpenApi();
-
-builder.Services.AddModules(builder.Configuration);
-
-var app = builder.Build();
-
-using (var scope = app.Services.CreateScope())
+try
 {
-    var accountsSeeder = scope.ServiceProvider.GetRequiredService<AccountSeeder>();
-    await accountsSeeder.SeedAsync();
+    var builder = WebApplication.CreateBuilder(args);
+
+    builder.Services.AddControllers();
+    builder.Services.AddCustomOpenApi();
+
+    builder.Services.AddModules(builder.Configuration);
+
+    var app = builder.Build();
+
+    using (var scope = app.Services.CreateScope())
+    {
+        var accountsSeeder = scope.ServiceProvider.GetRequiredService<AccountSeeder>();
+        await accountsSeeder.SeedAsync();
+    }
+
+    app.Configure();
+
+    app.Run();
 }
-
-app.UseExceptionMiddleware();
-
-if (app.Environment.IsDevelopment())
+catch (Exception ex)
 {
-    app.MapOpenApi();
-    app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "AuthService"));
+    Log.Fatal(ex, "Fatal error occured");
 }
-
-app.UseCors(config =>
+finally
 {
-    config.WithOrigins("http://localhost:5173")
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
-});
-
-app.UseAuthentication();
-app.UseScopedDataMiddleware();
-app.UseAuthorization();
-app.MapControllers();
-
-app.Run();
+    Log.CloseAndFlush();
+}

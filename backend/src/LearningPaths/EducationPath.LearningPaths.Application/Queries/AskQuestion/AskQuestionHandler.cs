@@ -34,7 +34,7 @@ public class AskQuestionHandler : IQueryHandlerWithResult<AskQuestionResponse, A
         if (!validationResult.IsValid)
             return validationResult.ToList();
 
-        var lesson = await _readDbContext.Lessons.FirstOrDefaultAsync(l => l.Id == query.LessonId);
+        var lesson = await _readDbContext.Lessons.FirstOrDefaultAsync(l => l.Id == query.LessonId, cancellationToken);
 
         if (lesson is null)
             return GeneralErrors.NotFound(query.LessonId, "lesson").ToErrors();
@@ -43,7 +43,7 @@ public class AskQuestionHandler : IQueryHandlerWithResult<AskQuestionResponse, A
 
         var prompt = AskQuestionPrompt.GetPrompt(lesson.Title, lesson.Content, query.Question);
 
-        var result = await _aiChat.SendPrompt(client, prompt);
+        var result = await _aiChat.SendPrompt(client, prompt, cancellationToken);
 
         if (result.IsFailure)
             return result.Error.ToErrors();

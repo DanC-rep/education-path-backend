@@ -15,7 +15,7 @@ public class CompleteLessonHandler : ICommandHandler<CompleteLessonCommand>
     
     public CompleteLessonHandler(
         ILessonsRepository lessonsRepository,
-        [FromKeyedServices(Modules.LearingPaths)] IUnitOfWork unitOfWork)
+        [FromKeyedServices(Modules.LearningPaths)] IUnitOfWork unitOfWork)
     {
         _lessonsRepository = lessonsRepository;
         _unitOfWork = unitOfWork;

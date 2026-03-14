@@ -30,6 +30,19 @@ public class RefreshSessionManager : IRefreshSessionManager
         return refreshSession;
     }
 
+    public async Task<Result<RefreshSession, Error>> GetByUserId(Guid userId, CancellationToken cancellationToken = default)
+    {
+        var refreshSession = await _accountsWriteDbContext.RefreshSessions
+            .Include(r => r.User)
+            .ThenInclude(u => u.Roles)
+            .FirstOrDefaultAsync(r => r.UserId == userId, cancellationToken);
+        
+        if (refreshSession is null)
+            return GeneralErrors.NotFound(userId);
+
+        return refreshSession;
+    }
+
     public void Delete(RefreshSession refreshSession)
     {
         _accountsWriteDbContext.RefreshSessions.Remove(refreshSession);

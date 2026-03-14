@@ -7,11 +7,13 @@ using EducationPath.Framework.Authorization;
 using EducationPath.LearningPaths.Infrastructure;
 using EducationPath.Skills.Infrastructure;
 using EducationPath.Skills.Presentation;
+using EducationPath.Tests.Infrastructure;
 using FluentValidation;
 using Serilog;
 using Serilog.Events;
+using Serilog.Exceptions;
 
-namespace EducationPath.Web;
+namespace EducationPath.Web.Configuration;
 
 public static class Inject
 {
@@ -24,6 +26,7 @@ public static class Inject
             .AddAccountsModule(configuration)
             .AddSkillsModule(configuration)
             .AddLearningPathsInfrastructure(configuration)
+            .AddTestsModule(configuration)
             .AddAuthServices(configuration)
             .AddApplicationLayers()
             .AddAI();
@@ -35,13 +38,12 @@ public static class Inject
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        Log.Logger = new LoggerConfiguration()
-            .WriteTo.Seq(configuration.GetConnectionString("Seq")
-                         ?? throw new ArgumentException("seq"))
-            .MinimumLevel.Override("Microsoft.AspNetCore.Hosting", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.AspNetCore.Mvc", LogEventLevel.Warning)
-            .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Warning)
-            .CreateLogger();
+        services.AddSerilog((sp, lc) => lc
+            .ReadFrom.Configuration(configuration)
+            .ReadFrom.Services(sp)
+            .Enrich.FromLogContext()
+            .Enrich.WithExceptionDetails()
+            .Enrich.WithProperty("ServiceName", "EducationPath"));
 
         return services;
     }
@@ -76,6 +78,15 @@ public static class Inject
 
         return services;
     }
+    
+    private static IServiceCollection AddTestsModule(
+        this IServiceCollection services,
+        IConfiguration configuration)
+    {
+        services.AddTestsInfrastructure(configuration);
+        
+        return services;
+    }
 
     private static IServiceCollection AddApplicationLayers(this IServiceCollection services)
     {
@@ -83,7 +94,8 @@ public static class Inject
         {
             typeof(EducationPath.Accounts.Application.Inject).Assembly,
             typeof(EducationPath.Skills.Application.Inject).Assembly,
-            typeof(EducationPath.LearningPaths.Application.Inject).Assembly
+            typeof(EducationPath.LearningPaths.Application.Inject).Assembly,
+            typeof(EducationPath.Tests.Application.Inject).Assembly
         };
         
         services.Scan(scan => scan.FromAssemblies(assemblies)

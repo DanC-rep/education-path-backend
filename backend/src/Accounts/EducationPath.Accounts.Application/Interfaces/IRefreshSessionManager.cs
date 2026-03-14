@@ -8,6 +8,9 @@ public interface IRefreshSessionManager
 {
     Task<Result<RefreshSession, Error>> GetByRefreshToken(
         Guid refreshToken, CancellationToken cancellationToken = default);
+    
+    Task<Result<RefreshSession, Error>> GetByUserId(
+        Guid userId, CancellationToken cancellationToken = default);
 
     void Delete(RefreshSession refreshSession);
 }

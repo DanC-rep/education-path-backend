@@ -33,7 +33,7 @@ public static class Inject
         services.AddScoped<IReadDbContext, LearningPathsReadDbContext>(_ =>
             new LearningPathsReadDbContext(configuration.GetConnectionString(Constants.DATABASE)!));
 
-        services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Modules.LearingPaths);
+        services.AddKeyedScoped<IUnitOfWork, UnitOfWork>(Modules.LearningPaths);
 
         return services;
     }
